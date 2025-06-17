@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { SearchAndFilter } from "@/components/SearchAndFilter";
 import { TempleCard } from "@/components/TempleCard";
@@ -11,9 +10,9 @@ const Index = () => {
 
   const handleSearch = (searchTerm: string) => {
     const filtered = sampleTemples.filter(temple =>
-      temple.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      temple.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      temple.deity.toLowerCase().includes(searchTerm.toLowerCase())
+      temple.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      temple.Address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      temple.District.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredTemples(filtered);
   };
@@ -22,15 +21,15 @@ const Index = () => {
     let filtered = sampleTemples;
 
     if (filters.state && filters.state !== 'all') {
-      filtered = filtered.filter(temple => temple.state === filters.state);
+      filtered = filtered.filter(temple => temple.State === filters.state);
     }
 
-    if (filters.deity && filters.deity !== 'all') {
-      filtered = filtered.filter(temple => temple.deity === filters.deity);
+    if (filters.district && filters.district !== 'all') {
+      filtered = filtered.filter(temple => temple.District === filters.district);
     }
 
-    if (filters.architecture && filters.architecture !== 'all') {
-      filtered = filtered.filter(temple => temple.architectureStyle === filters.architecture);
+    if (filters.swayambhu && filters.swayambhu !== 'all') {
+      filtered = filtered.filter(temple => temple.Swayambhu === filters.swayambhu);
     }
 
     setFilteredTemples(filtered);

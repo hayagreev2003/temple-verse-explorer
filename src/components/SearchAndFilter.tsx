@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Search, Filter } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -15,8 +14,8 @@ export const SearchAndFilter = ({ onSearch, onFilter }: SearchAndFilterProps) =>
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
     state: 'all',
-    deity: 'all',
-    architecture: 'all'
+    district: 'all',
+    swayambhu: 'all'
   });
   const [showFilters, setShowFilters] = useState(false);
 
@@ -32,7 +31,7 @@ export const SearchAndFilter = ({ onSearch, onFilter }: SearchAndFilterProps) =>
   };
 
   const resetFilters = () => {
-    const resetFilters = { state: 'all', deity: 'all', architecture: 'all' };
+    const resetFilters = { state: 'all', district: 'all', swayambhu: 'all' };
     setFilters(resetFilters);
     onFilter(resetFilters);
   };
@@ -44,7 +43,7 @@ export const SearchAndFilter = ({ onSearch, onFilter }: SearchAndFilterProps) =>
         <div className="relative">
           <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
-            placeholder="Search temples by name, location, or deity..."
+            placeholder="Search temples by name, location, or district..."
             value={searchTerm}
             onChange={(e) => handleSearchChange(e.target.value)}
             className="pl-10 h-12 text-lg border-orange-200 focus:border-orange-400"
@@ -62,7 +61,7 @@ export const SearchAndFilter = ({ onSearch, onFilter }: SearchAndFilterProps) =>
             {showFilters ? 'Hide Filters' : 'Show Filters'}
           </Button>
           
-          {(filters.state !== 'all' || filters.deity !== 'all' || filters.architecture !== 'all') && (
+          {(filters.state !== 'all' || filters.district !== 'all' || filters.swayambhu !== 'all') && (
             <Button
               variant="ghost"
               onClick={resetFilters}
@@ -84,44 +83,34 @@ export const SearchAndFilter = ({ onSearch, onFilter }: SearchAndFilterProps) =>
                 </SelectTrigger>
                 <SelectContent className="bg-white">
                   <SelectItem value="all">All States</SelectItem>
-                  <SelectItem value="Tamil Nadu">Tamil Nadu</SelectItem>
-                  <SelectItem value="Karnataka">Karnataka</SelectItem>
-                  <SelectItem value="Rajasthan">Rajasthan</SelectItem>
-                  <SelectItem value="Odisha">Odisha</SelectItem>
-                  <SelectItem value="Kerala">Kerala</SelectItem>
+                  <SelectItem value="Telangana">Telangana</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Deity</label>
-              <Select value={filters.deity} onValueChange={(value) => handleFilterChange('deity', value)}>
+              <label className="block text-sm font-medium text-gray-700 mb-2">District</label>
+              <Select value={filters.district} onValueChange={(value) => handleFilterChange('district', value)}>
                 <SelectTrigger className="border-orange-200">
-                  <SelectValue placeholder="Select Deity" />
+                  <SelectValue placeholder="Select District" />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
-                  <SelectItem value="all">All Deities</SelectItem>
-                  <SelectItem value="Lord Shiva">Lord Shiva</SelectItem>
-                  <SelectItem value="Lord Vishnu">Lord Vishnu</SelectItem>
-                  <SelectItem value="Goddess Parvati">Goddess Parvati</SelectItem>
-                  <SelectItem value="Lord Jagannath">Lord Jagannath</SelectItem>
-                  <SelectItem value="Lord Krishna">Lord Krishna</SelectItem>
+                  <SelectItem value="all">All Districts</SelectItem>
+                  <SelectItem value="Ranga Reddy">Ranga Reddy</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Architecture</label>
-              <Select value={filters.architecture} onValueChange={(value) => handleFilterChange('architecture', value)}>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Swayambhu</label>
+              <Select value={filters.swayambhu} onValueChange={(value) => handleFilterChange('swayambhu', value)}>
                 <SelectTrigger className="border-orange-200">
-                  <SelectValue placeholder="Select Architecture" />
+                  <SelectValue placeholder="Select Swayambhu" />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
-                  <SelectItem value="all">All Styles</SelectItem>
-                  <SelectItem value="Dravidian">Dravidian</SelectItem>
-                  <SelectItem value="Rajput">Rajput</SelectItem>
-                  <SelectItem value="Kalinga">Kalinga</SelectItem>
-                  <SelectItem value="Kerala">Kerala</SelectItem>
+                  <SelectItem value="all">All</SelectItem>
+                  <SelectItem value="Yes">Yes</SelectItem>
+                  <SelectItem value="No">No</SelectItem>
                 </SelectContent>
               </Select>
             </div>
