@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, MapPin, Calendar, Clock, Train, IndianRupee, Sparkles } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar, Clock, Train, IndianRupee, Sparkles, Map } from "lucide-react";
 
 interface Temple {
   id: number;
@@ -23,13 +23,35 @@ interface TempleDetailProps {
 }
 
 export const TempleDetail = ({ temple, onBack }: TempleDetailProps) => {
+  // Helper function to generate Google Maps embed URL
+  const getGoogleMapsEmbedUrl = (location: string) => {
+    const encodedLocation = encodeURIComponent(location);
+    return `https://maps.google.com/maps?q=${encodedLocation}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+  };
+
+  // Helper function to check if Google Maps location is available
+  const hasGoogleMapsLocation = () => {
+    return temple["Google maps Location"] &&
+      temple["Google maps Location"] !== "NaN" &&
+      temple["Google maps Location"] !== null;
+  };
+
+  // Helper function to get the best available location for maps
+  const getLocationForMaps = () => {
+    if (hasGoogleMapsLocation()) {
+      return temple["Google maps Location"] as string;
+    }
+    // Fallback to address if Google Maps location is not available
+    return temple.Address;
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-orange-100">
         <div className="container mx-auto px-4 py-4">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             onClick={onBack}
             className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
           >
@@ -43,17 +65,30 @@ export const TempleDetail = ({ temple, onBack }: TempleDetailProps) => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Hero Image */}
+            {/* Google Maps */}
             <Card className="overflow-hidden border-orange-200">
-              <div className="aspect-video relative bg-gradient-to-br from-orange-100 to-amber-100">
-                <div className="w-full h-full flex items-center justify-center">
-                  <span className="text-8xl text-orange-300">🕍</span>
-                </div>
+              <div className="aspect-video relative">
+                <iframe
+                  src={getGoogleMapsEmbedUrl(getLocationForMaps())}
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  className="w-full h-full"
+                />
                 <div className="absolute top-4 right-4">
                   <Badge className="bg-orange-500 text-white text-sm px-3 py-1">
                     {temple.State}
                   </Badge>
                 </div>
+                {!hasGoogleMapsLocation() && (
+                  <div className="absolute bottom-4 left-4 bg-black bg-opacity-70 text-white text-sm px-3 py-2 rounded-lg">
+                    <Map className="h-4 w-4 inline mr-2" />
+                    Using address for location
+                  </div>
+                )}
               </div>
             </Card>
 
@@ -71,7 +106,7 @@ export const TempleDetail = ({ temple, onBack }: TempleDetailProps) => {
                     {temple.History}
                   </p>
                 )}
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
                   <div className="flex items-center text-gray-600">
                     <MapPin className="h-5 w-5 mr-3 text-orange-500" />
@@ -80,7 +115,7 @@ export const TempleDetail = ({ temple, onBack }: TempleDetailProps) => {
                       <p className="text-sm">{temple.Address}</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center text-gray-600">
                     <Calendar className="h-5 w-5 mr-3 text-orange-500" />
                     <div>
@@ -92,7 +127,7 @@ export const TempleDetail = ({ temple, onBack }: TempleDetailProps) => {
               </CardContent>
             </Card>
 
-            {temple["Known For"] && (
+            {/* {temple["Known For"] && (
               <Card className="border-orange-200">
                 <CardHeader>
                   <CardTitle className="text-xl text-gray-800">Known For</CardTitle>
@@ -101,7 +136,7 @@ export const TempleDetail = ({ temple, onBack }: TempleDetailProps) => {
                   <p className="text-gray-700">{temple["Known For"]}</p>
                 </CardContent>
               </Card>
-            )}
+            )} */}
           </div>
 
           {/* Sidebar */}
@@ -116,7 +151,7 @@ export const TempleDetail = ({ temple, onBack }: TempleDetailProps) => {
                   <p className="text-sm text-gray-500">District</p>
                   <p className="text-xl font-bold text-orange-700">{temple.District}</p>
                 </div>
-                
+
                 <div className="space-y-3 pt-4 border-t border-orange-100">
                   {temple["Contact Number"] && (
                     <div className="flex items-center justify-between">
@@ -127,7 +162,7 @@ export const TempleDetail = ({ temple, onBack }: TempleDetailProps) => {
                       <span className="text-sm font-medium">{temple["Contact Number"]}</span>
                     </div>
                   )}
-                  
+
                   {temple["Village/Town/City"] && (
                     <div className="flex items-center justify-between">
                       <div className="flex items-center text-gray-600">
@@ -141,7 +176,7 @@ export const TempleDetail = ({ temple, onBack }: TempleDetailProps) => {
               </CardContent>
             </Card>
 
-            {/* Quick Actions */}
+            {/* Quick Actions
             <Card className="border-orange-200">
               <CardContent className="pt-6">
                 <div className="space-y-3">
@@ -153,7 +188,7 @@ export const TempleDetail = ({ temple, onBack }: TempleDetailProps) => {
                   </Button>
                 </div>
               </CardContent>
-            </Card>
+            </Card> */}
           </div>
         </div>
       </div>

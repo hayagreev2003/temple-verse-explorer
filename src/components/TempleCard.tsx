@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Calendar, Camera, Contact } from "lucide-react";
+import { MapPin, Calendar, Camera, Contact, Map } from "lucide-react";
 
 interface Temple {
   id: number;
@@ -22,22 +22,61 @@ interface TempleCardProps {
 }
 
 export const TempleCard = ({ temple, onClick }: TempleCardProps) => {
+  // Helper function to generate Google Maps embed URL
+  const getGoogleMapsEmbedUrl = (location: string) => {
+    const encodedLocation = encodeURIComponent(location);
+
+    // Using Google Maps standard embed (no API key required)
+    // This creates a search-based embed that works without an API key
+    return `https://maps.google.com/maps?q=${encodedLocation}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+  };
+
+  // Helper function to check if Google Maps location is available
+  const hasGoogleMapsLocation = () => {
+    return temple["Google maps Location"] &&
+      temple["Google maps Location"] !== "NaN" &&
+      temple["Google maps Location"] !== null;
+  };
+
+  // Helper function to get the best available location for maps
+  const getLocationForMaps = () => {
+    if (hasGoogleMapsLocation()) {
+      return temple["Google maps Location"] as string;
+    }
+    // Fallback to address if Google Maps location is not available
+    return temple.Address;
+  };
+
   return (
-    <Card 
+    <Card
       className="group cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-white border-orange-100 overflow-hidden"
       onClick={onClick}
     >
-      {/* <div className="aspect-video bg-gradient-to-br from-orange-100 to-amber-100 relative overflow-hidden">
-        <div className="w-full h-full flex items-center justify-center">
-          <span className="text-4xl text-orange-300">🕍</span>
-        </div>
+      {/* Google Maps iframe section */}
+      <div className="aspect-video relative overflow-hidden">
+        <iframe
+          src={getGoogleMapsEmbedUrl(getLocationForMaps())}
+          width="100%"
+          height="100%"
+          style={{ border: 0 }}
+          allowFullScreen
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          className="w-full h-full"
+        />
         <div className="absolute top-3 right-3">
           <Badge className="bg-orange-500 text-white">
             {temple.State}
           </Badge>
         </div>
-      </div> */}
-      
+        {!hasGoogleMapsLocation() && (
+          <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+            <Map className="h-3 w-3 inline mr-1" />
+            Using address for location
+          </div>
+        )}
+      </div>
+
       <CardContent className="p-4 space-y-3">
         <div>
           <h3 className="font-bold text-lg text-gray-800 group-hover:text-orange-600 transition-colors line-clamp-1">
@@ -54,7 +93,7 @@ export const TempleCard = ({ temple, onClick }: TempleCardProps) => {
             <span className="text-gray-500">District:</span>
             <span className="font-medium text-orange-700">{temple.District}</span>
           </div>
-          
+
           <div className="flex items-center justify-between text-sm">
             <span className="text-gray-500">Swayambhu:</span>
             <div className="flex items-center">
