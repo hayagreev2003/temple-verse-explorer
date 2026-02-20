@@ -1,6 +1,6 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Calendar, Camera, Contact, Map } from "lucide-react";
+import { MapPin, Camera, Map, Phone } from "lucide-react";
 
 interface Temple {
   id: number;
@@ -22,38 +22,28 @@ interface TempleCardProps {
 }
 
 export const TempleCard = ({ temple, onClick }: TempleCardProps) => {
-  // Helper function to generate Google Maps embed URL
   const getGoogleMapsEmbedUrl = (location: string) => {
     const encodedLocation = encodeURIComponent(location);
-
-    // Using Google Maps standard embed (no API key required)
-    // This creates a search-based embed that works without an API key
     return `https://maps.google.com/maps?q=${encodedLocation}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
   };
 
-  // Helper function to check if Google Maps location is available
   const hasGoogleMapsLocation = () => {
-    return temple["Google maps Location"] &&
-      temple["Google maps Location"] !== "NaN" &&
-      temple["Google maps Location"] !== null;
+    return temple["Google maps Location"] && temple["Google maps Location"] !== "NaN" && temple["Google maps Location"] !== null;
   };
 
-  // Helper function to get the best available location for maps
   const getLocationForMaps = () => {
     if (hasGoogleMapsLocation()) {
       return temple["Google maps Location"] as string;
     }
-    // Fallback to address if Google Maps location is not available
     return temple.Address;
   };
 
   return (
     <Card
-      className="group cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-white border-orange-100 overflow-hidden"
+      className="group cursor-pointer overflow-hidden border-orange-100/80 bg-white/90 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
       onClick={onClick}
     >
-      {/* Google Maps iframe section */}
-      <div className="aspect-video relative overflow-hidden">
+      <div className="relative aspect-video overflow-hidden">
         <iframe
           src={getGoogleMapsEmbedUrl(getLocationForMaps())}
           width="100%"
@@ -62,65 +52,50 @@ export const TempleCard = ({ temple, onClick }: TempleCardProps) => {
           allowFullScreen
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
-          className="w-full h-full"
+          className="h-full w-full"
         />
-        <div className="absolute top-3 right-3">
-          <Badge className="bg-orange-500 text-white">
-            {temple.State}
+        <div className="absolute right-3 top-3 flex gap-2">
+          <Badge className="bg-white/90 text-slate-700">{temple.State}</Badge>
+          <Badge className={temple.Swayambhu === "Yes" ? "bg-orange-500 text-white" : "bg-slate-600 text-white"}>
+            {temple.Swayambhu === "Yes" ? "Swayambhu" : "Historic"}
           </Badge>
         </div>
         {!hasGoogleMapsLocation() && (
-          <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
-            <Map className="h-3 w-3 inline mr-1" />
+          <div className="absolute bottom-2 left-2 rounded bg-black/60 px-2 py-1 text-xs text-white">
+            <Map className="mr-1 inline h-3 w-3" />
             Using address for location
           </div>
         )}
       </div>
 
-      <CardContent className="p-4 space-y-3">
-        <div>
-          <h3 className="font-bold text-lg text-gray-800 group-hover:text-orange-600 transition-colors line-clamp-1">
-            {temple.Name}
-          </h3>
-          <div className="flex items-center text-gray-600 text-sm mt-1">
-            <MapPin className="h-3 w-3 mr-1" />
-            <span className="line-clamp-1">{temple.Address}</span>
-          </div>
+      <CardHeader className="pb-2">
+        <CardTitle className="line-clamp-1 text-lg text-slate-800 transition-colors group-hover:text-orange-600">
+          {temple.Name}
+        </CardTitle>
+        <div className="flex items-center text-sm text-slate-600">
+          <MapPin className="mr-1 h-3.5 w-3.5" />
+          <span className="line-clamp-1">{temple.Address}</span>
         </div>
+      </CardHeader>
 
-        <div className="space-y-2">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-500">District:</span>
-            <span className="font-medium text-orange-700">{temple.District}</span>
-          </div>
-
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-500">Swayambhu:</span>
-            <div className="flex items-center">
-              <Calendar className="h-3 w-3 mr-1 text-gray-400" />
-              <span className="font-medium">{temple.Swayambhu === "Yes" ? "Yes" : "No"}</span>
-            </div>
-          </div>
+      <CardContent className="space-y-2 pt-0 text-sm">
+        <div className="flex items-center justify-between">
+          <span className="text-slate-500">District</span>
+          <span className="font-medium text-orange-700">{temple.District}</span>
         </div>
-
-        {temple["Known For"] && (
-          <p className="text-gray-600 text-sm line-clamp-2 leading-relaxed">
-            {temple["Known For"]}
-          </p>
-        )}
-
-        <div className="pt-2 border-t border-orange-50">
-          <div className="flex items-center justify-between text-xs text-gray-500">
-            {temple["Contact Number"] && (
-              <span>Contact: {temple["Contact Number"]}</span>
-            )}
-            <div className="flex items-center">
-              <Camera className="h-3 w-3 mr-1" />
-              <span>View Details</span>
-            </div>
-          </div>
-        </div>
+        {temple["Known For"] && <p className="line-clamp-2 leading-relaxed text-slate-600">{temple["Known For"]}</p>}
       </CardContent>
+
+      <CardFooter className="flex items-center justify-between border-t border-orange-50 pt-4 text-xs text-slate-500">
+        <div className="line-clamp-1 flex items-center gap-1">
+          <Phone className="h-3.5 w-3.5" />
+          {temple["Contact Number"] || "No contact"}
+        </div>
+        <div className="flex items-center text-orange-600">
+          <Camera className="mr-1 h-3.5 w-3.5" />
+          View details
+        </div>
+      </CardFooter>
     </Card>
   );
 };

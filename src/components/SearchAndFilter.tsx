@@ -1,23 +1,30 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Search, Filter } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 interface SearchAndFilterProps {
   onSearch: (searchTerm: string) => void;
-  onFilter: (filters: any) => void;
+  onFilter: (filters: { state: string; district: string; swayambhu: string }) => void;
 }
 
 export const SearchAndFilter = ({ onSearch, onFilter }: SearchAndFilterProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
-    state: 'all',
-    district: 'all',
-    swayambhu: 'all'
+    state: "all",
+    district: "all",
+    swayambhu: "all",
   });
   const [showFilters, setShowFilters] = useState(false);
+
+  const activeFilterCount = useMemo(
+    () => Object.values(filters).filter((value) => value !== "all").length,
+    [filters]
+  );
 
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);
@@ -31,92 +38,98 @@ export const SearchAndFilter = ({ onSearch, onFilter }: SearchAndFilterProps) =>
   };
 
   const resetFilters = () => {
-    const resetFilters = { state: 'all', district: 'all', swayambhu: 'all' };
+    const resetFilters = { state: "all", district: "all", swayambhu: "all" };
     setFilters(resetFilters);
     onFilter(resetFilters);
   };
 
   return (
-    <Card className="p-6 bg-white/80 backdrop-blur-sm border-orange-200 shadow-lg">
-      <div className="space-y-4">
-        {/* Search Bar */}
+    <Card className="border-orange-200/80 bg-white/80 shadow-lg backdrop-blur-sm">
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between gap-3">
+          <CardTitle className="text-base text-slate-800">Search & refine</CardTitle>
+          {activeFilterCount > 0 && (
+            <Badge variant="secondary" className="bg-orange-100 text-orange-700">
+              {activeFilterCount} active
+            </Badge>
+          )}
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
         <div className="relative">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
           <Input
             placeholder="Search temples by name, location, or district..."
             value={searchTerm}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="pl-10 h-12 text-lg border-orange-200 focus:border-orange-400"
+            className="h-12 border-orange-200 pl-10 text-base focus-visible:ring-orange-300"
           />
         </div>
 
-        {/* Filter Toggle */}
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           <Button
             variant="outline"
             onClick={() => setShowFilters(!showFilters)}
             className="border-orange-200 text-orange-700 hover:bg-orange-50"
           >
-            <Filter className="h-4 w-4 mr-2" />
-            {showFilters ? 'Hide Filters' : 'Show Filters'}
+            <Filter className="mr-2 h-4 w-4" />
+            {showFilters ? "Hide Filters" : "Show Filters"}
           </Button>
-          
-          {(filters.state !== 'all' || filters.district !== 'all' || filters.swayambhu !== 'all') && (
-            <Button
-              variant="ghost"
-              onClick={resetFilters}
-              className="text-orange-600 hover:text-orange-700"
-            >
+
+          {activeFilterCount > 0 && (
+            <Button variant="ghost" onClick={resetFilters} className="text-orange-600 hover:text-orange-700">
               Clear Filters
             </Button>
           )}
         </div>
 
-        {/* Filters */}
         {showFilters && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-orange-100">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">State</label>
-              <Select value={filters.state} onValueChange={(value) => handleFilterChange('state', value)}>
-                <SelectTrigger className="border-orange-200">
-                  <SelectValue placeholder="Select State" />
-                </SelectTrigger>
-                <SelectContent className="bg-white">
-                  <SelectItem value="all">All States</SelectItem>
-                  <SelectItem value="Telangana">Telangana</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <>
+            <Separator className="bg-orange-100" />
+            <div className="grid grid-cols-1 gap-4 pt-1 md:grid-cols-3">
+              <div>
+                <label className="mb-2 block text-sm font-medium text-slate-700">State</label>
+                <Select value={filters.state} onValueChange={(value) => handleFilterChange("state", value)}>
+                  <SelectTrigger className="border-orange-200">
+                    <SelectValue placeholder="Select State" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="all">All States</SelectItem>
+                    <SelectItem value="Telangana">Telangana</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">District</label>
-              <Select value={filters.district} onValueChange={(value) => handleFilterChange('district', value)}>
-                <SelectTrigger className="border-orange-200">
-                  <SelectValue placeholder="Select District" />
-                </SelectTrigger>
-                <SelectContent className="bg-white">
-                  <SelectItem value="all">All Districts</SelectItem>
-                  <SelectItem value="Ranga Reddy">Ranga Reddy</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+              <div>
+                <label className="mb-2 block text-sm font-medium text-slate-700">District</label>
+                <Select value={filters.district} onValueChange={(value) => handleFilterChange("district", value)}>
+                  <SelectTrigger className="border-orange-200">
+                    <SelectValue placeholder="Select District" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="all">All Districts</SelectItem>
+                    <SelectItem value="Ranga Reddy">Ranga Reddy</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Swayambhu</label>
-              <Select value={filters.swayambhu} onValueChange={(value) => handleFilterChange('swayambhu', value)}>
-                <SelectTrigger className="border-orange-200">
-                  <SelectValue placeholder="Select Swayambhu" />
-                </SelectTrigger>
-                <SelectContent className="bg-white">
-                  <SelectItem value="all">All</SelectItem>
-                  <SelectItem value="Yes">Yes</SelectItem>
-                  <SelectItem value="No">No</SelectItem>
-                </SelectContent>
-              </Select>
+              <div>
+                <label className="mb-2 block text-sm font-medium text-slate-700">Swayambhu</label>
+                <Select value={filters.swayambhu} onValueChange={(value) => handleFilterChange("swayambhu", value)}>
+                  <SelectTrigger className="border-orange-200">
+                    <SelectValue placeholder="Select Swayambhu" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="all">All</SelectItem>
+                    <SelectItem value="Yes">Yes</SelectItem>
+                    <SelectItem value="No">No</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          </div>
+          </>
         )}
-      </div>
+      </CardContent>
     </Card>
   );
 };

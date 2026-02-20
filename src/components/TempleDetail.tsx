@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, MapPin, Calendar, Clock, Train, IndianRupee, Sparkles, Map } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ArrowLeft, MapPin, Calendar, Phone, Sparkles, Map } from "lucide-react";
 
 interface Temple {
   id: number;
@@ -23,51 +24,46 @@ interface TempleDetailProps {
 }
 
 export const TempleDetail = ({ temple, onBack }: TempleDetailProps) => {
-  // Helper function to generate Google Maps embed URL
   const getGoogleMapsEmbedUrl = (location: string) => {
     const encodedLocation = encodeURIComponent(location);
     return `https://maps.google.com/maps?q=${encodedLocation}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
   };
 
-  // Helper function to check if Google Maps location is available
   const hasGoogleMapsLocation = () => {
     return temple["Google maps Location"] &&
       temple["Google maps Location"] !== "NaN" &&
       temple["Google maps Location"] !== null;
   };
 
-  // Helper function to get the best available location for maps
   const getLocationForMaps = () => {
     if (hasGoogleMapsLocation()) {
       return temple["Google maps Location"] as string;
     }
-    // Fallback to address if Google Maps location is not available
     return temple.Address;
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b border-orange-100">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-rose-50">
+      <div className="border-b border-orange-100 bg-white/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4">
-          <Button
-            variant="ghost"
-            onClick={onBack}
-            className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
+          <Button variant="ghost" onClick={onBack} className="text-orange-700 hover:bg-orange-50 hover:text-orange-800">
+            <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Temples
           </Button>
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Google Maps */}
+        <div className="mb-6 flex flex-wrap items-center gap-3">
+          <h1 className="text-3xl font-bold text-slate-800">{temple.Name}</h1>
+          <Badge className="bg-orange-500 text-white">{temple.State}</Badge>
+          <Badge variant="secondary" className="bg-white text-slate-700 border border-orange-100">{temple.District}</Badge>
+        </div>
+
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          <div className="space-y-6 lg:col-span-2">
             <Card className="overflow-hidden border-orange-200">
-              <div className="aspect-video relative">
+              <div className="relative aspect-video">
                 <iframe
                   src={getGoogleMapsEmbedUrl(getLocationForMaps())}
                   width="100%"
@@ -76,119 +72,86 @@ export const TempleDetail = ({ temple, onBack }: TempleDetailProps) => {
                   allowFullScreen
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  className="w-full h-full"
+                  className="h-full w-full"
                 />
-                <div className="absolute top-4 right-4">
-                  <Badge className="bg-orange-500 text-white text-sm px-3 py-1">
-                    {temple.State}
-                  </Badge>
-                </div>
                 {!hasGoogleMapsLocation() && (
-                  <div className="absolute bottom-4 left-4 bg-black bg-opacity-70 text-white text-sm px-3 py-2 rounded-lg">
-                    <Map className="h-4 w-4 inline mr-2" />
+                  <div className="absolute bottom-4 left-4 rounded-lg bg-black/70 px-3 py-2 text-sm text-white">
+                    <Map className="mr-2 inline h-4 w-4" />
                     Using address for location
                   </div>
                 )}
               </div>
             </Card>
 
-            {/* Temple Information */}
             <Card className="border-orange-200">
-              <CardHeader>
-                <CardTitle className="text-2xl text-gray-800 flex items-center">
-                  <Sparkles className="h-6 w-6 mr-2 text-orange-500" />
-                  About {temple.Name}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {temple.History && (
-                  <p className="text-gray-700 leading-relaxed text-lg">
-                    {temple.History}
-                  </p>
-                )}
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
-                  <div className="flex items-center text-gray-600">
-                    <MapPin className="h-5 w-5 mr-3 text-orange-500" />
-                    <div>
-                      <p className="font-medium">Location</p>
-                      <p className="text-sm">{temple.Address}</p>
+              <CardContent className="p-4">
+                <Tabs defaultValue="overview" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="overview">Overview</TabsTrigger>
+                    <TabsTrigger value="history">History</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="overview" className="mt-4 space-y-4">
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                      <div className="rounded-lg border border-orange-100 p-4">
+                        <p className="text-sm text-slate-500">Location</p>
+                        <p className="mt-1 text-slate-700">{temple.Address}</p>
+                      </div>
+                      <div className="rounded-lg border border-orange-100 p-4">
+                        <p className="text-sm text-slate-500">Swayambhu</p>
+                        <p className="mt-1 text-slate-700">{temple.Swayambhu === "Yes" ? "Yes" : "No"}</p>
+                      </div>
                     </div>
-                  </div>
-
-                  <div className="flex items-center text-gray-600">
-                    <Calendar className="h-5 w-5 mr-3 text-orange-500" />
-                    <div>
-                      <p className="font-medium">Swayambhu</p>
-                      <p className="text-sm">{temple.Swayambhu === "Yes" ? "Yes" : "No"}</p>
-                    </div>
-                  </div>
-                </div>
+                    {temple["Known For"] && (
+                      <div className="rounded-lg border border-orange-100 p-4">
+                        <p className="text-sm text-slate-500">Known For</p>
+                        <p className="mt-1 text-slate-700">{temple["Known For"]}</p>
+                      </div>
+                    )}
+                  </TabsContent>
+                  <TabsContent value="history" className="mt-4">
+                    <p className="leading-relaxed text-slate-700">{temple.History || "History details are not available."}</p>
+                  </TabsContent>
+                </Tabs>
               </CardContent>
             </Card>
-
-            {/* {temple["Known For"] && (
-              <Card className="border-orange-200">
-                <CardHeader>
-                  <CardTitle className="text-xl text-gray-800">Known For</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-700">{temple["Known For"]}</p>
-                </CardContent>
-              </Card>
-            )} */}
           </div>
 
-          {/* Sidebar */}
           <div className="space-y-6">
-            {/* Temple Details */}
             <Card className="border-orange-200">
               <CardHeader>
-                <CardTitle className="text-lg text-gray-800">Temple Details</CardTitle>
+                <CardTitle className="text-lg text-slate-800">Temple Details</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="text-center">
-                  <p className="text-sm text-gray-500">District</p>
-                  <p className="text-xl font-bold text-orange-700">{temple.District}</p>
+                <div className="flex items-start gap-3 text-slate-700">
+                  <MapPin className="mt-0.5 h-4 w-4 text-orange-500" />
+                  <div>
+                    <p className="text-sm text-slate-500">Village / Town / City</p>
+                    <p className="font-medium">{temple["Village/Town/City"]}</p>
+                  </div>
                 </div>
-
-                <div className="space-y-3 pt-4 border-t border-orange-100">
-                  {temple["Contact Number"] && (
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center text-gray-600">
-                        <Clock className="h-4 w-4 mr-2 text-orange-500" />
-                        <span className="text-sm">Contact</span>
-                      </div>
-                      <span className="text-sm font-medium">{temple["Contact Number"]}</span>
-                    </div>
-                  )}
-
-                  {temple["Village/Town/City"] && (
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center text-gray-600">
-                        <MapPin className="h-4 w-4 mr-2 text-orange-500" />
-                        <span className="text-sm">Village/Town/City</span>
-                      </div>
-                      <span className="text-sm font-medium">{temple["Village/Town/City"]}</span>
-                    </div>
-                  )}
+                <div className="flex items-start gap-3 text-slate-700">
+                  <Calendar className="mt-0.5 h-4 w-4 text-orange-500" />
+                  <div>
+                    <p className="text-sm text-slate-500">Swayambhu status</p>
+                    <p className="font-medium">{temple.Swayambhu === "Yes" ? "Yes" : "No"}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 text-slate-700">
+                  <Phone className="mt-0.5 h-4 w-4 text-orange-500" />
+                  <div>
+                    <p className="text-sm text-slate-500">Contact</p>
+                    <p className="font-medium">{temple["Contact Number"] || "Not available"}</p>
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Quick Actions
-            <Card className="border-orange-200">
-              <CardContent className="pt-6">
-                <div className="space-y-3">
-                  <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white">
-                    Get Directions
-                  </Button>
-                  <Button variant="outline" className="w-full border-orange-300 text-orange-700 hover:bg-orange-50">
-                    Share Temple
-                  </Button>
-                </div>
+            <Card className="border-orange-200 bg-white/80">
+              <CardContent className="flex items-center gap-3 p-4 text-sm text-slate-700">
+                <Sparkles className="h-4 w-4 text-orange-500" />
+                Tip: check map details before planning your temple visit.
               </CardContent>
-            </Card> */}
+            </Card>
           </div>
         </div>
       </div>
